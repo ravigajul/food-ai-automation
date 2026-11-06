@@ -1,0 +1,19 @@
+name: Duplicate Item — Same Pizza Ordered Twice
+description: >
+  Customer orders one large pepperoni pizza then, when asked about extras,
+  requests another large pepperoni pizza. Tests that the agent increments the
+  quantity to 2 on a single cart line rather than adding a separate duplicate
+  line item.
+persona: duplicate_item_order
+termination_trigger: cvv
+cvv: "382"
+voice_items:
+  - "1 Large Pepperoni Pizza"
+post_order_requests:
+  - "And could I also get another large pepperoni pizza please?"
+expected_items:
+  - "2 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression
+  - edge

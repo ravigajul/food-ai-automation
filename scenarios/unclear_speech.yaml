@@ -1,0 +1,22 @@
+name: Unclear Customer Speech - Agent Asks to Repeat
+description: >
+  Customer speech is unclear (audio interference over the physical loop).
+  The agent asks Ravi to repeat. Ravi restates the order clearly and the
+  conversation continues normally. Tests that the agent handles unclear
+  input gracefully (asks to repeat rather than crashing or guessing), and
+  that the state machine deterministically re-states the last item rather
+  than letting Ollama hallucinate a different order.
+  Note: in clean lab conditions the agent may not ask to repeat — the test
+  still validates the full happy path. The repeat handler fires whenever
+  real-world audio interference triggers the agent's clarification request.
+persona: unclear_speech
+termination_trigger: cvv
+cvv: "382"
+voice_items:
+  - "1 Large Pepperoni Pizza"
+expected_items:
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression
+  - negative

@@ -1,0 +1,16 @@
+name: Group Order — Agent Recommends for 6 People
+description: >
+  Customer tells the agent they are ordering for a group of 6 people and asks
+  for a recommendation. The agent builds the cart; Ravi accepts the suggestion.
+  Tests that Ravi can defer cart-building to the agent.
+persona: group_order
+pre_order_queries:
+  - "I'm ordering for a group of 6 people. What would you recommend?"
+termination_trigger: cvv
+cvv: "382"
+# expected_items: intentionally omitted — verification uses [AGENT RECOMMENDATION]
+# tag captured during the conversation to dynamically extract and verify what
+# the agent recommended vs what appears on the Order Complete screen.
+expected_delivery_type: Carryout
+tags:
+  - regression

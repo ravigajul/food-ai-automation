@@ -1,0 +1,50 @@
+# Appium Configuration for Voice Ordering Test — TestGrid Cloud
+# Copy of appium_config.yaml pointing to TestGrid remote execution.
+# Usage: python end_to_end_voice_test.py --config config/appium_config.testgrid.yaml
+#        (or symlink / copy over appium_config.yaml before a cloud run)
+
+appium:
+  server_url: "https://<your-testgrid-host>/appium/wd/hub"  # set to your cloud grid URL
+
+capabilities:
+  platformName: "Android"
+  automationName: "UiAutomator2"
+  deviceName: "Android Device"  # Will use connected device
+  "udid": "<device-udid>"  # your device UDID
+  "tg:userToken": "${TESTGRID_USER_TOKEN}"  # never commit a real token; supply via environment
+  "systemPort": "4002"
+  app: ""  # Leave empty to use installed app
+  appPackage: "com.acmepizza.android"
+  appActivity: "com.acmepizza.android.MainActivity"
+  noReset: true  # Keep app state (don't clear data between tests)
+  fullReset: false
+  autoGrantPermissions: true
+  newCommandTimeout: 300
+
+# Timeouts
+timeouts:
+  implicit_wait: 20
+  explicit_wait: 25
+  page_load: 20
+
+# Test configuration
+# Leave screenshot_dir and audio_dir empty to use the system temp directory
+# (tempfile.gettempdir()) — works on Mac, Windows, and Linux without changes.
+# Set explicit paths here only if you need a fixed location.
+test:
+  screenshot_dir: ""
+  audio_dir: ""
+  take_screenshots: true
+  record_audio: true
+
+# Voice AI configuration
+voice_ai:
+  tts_voice: "en-US-JennyNeural"  # Edge TTS voice
+  speech_recognition_timeout: 10
+  speech_phrase_time_limit: 8
+
+# Ollama configuration
+ollama:
+  base_url: "http://localhost:11434"
+  model: "qwen2.5:7b"  # Best available model for strict instruction following + short responses
+  timeout: 30

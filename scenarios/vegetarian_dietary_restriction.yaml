@@ -1,0 +1,17 @@
+name: Vegetarian Dietary Restriction — Agent Recommends
+description: >
+  Customer tells the agent they are vegetarian and asks for a recommendation.
+  The agent builds the cart with vegetarian items; Ravi accepts the suggestion.
+  Tests that Ravi's dietary restriction is honoured and the recommended items
+  match what ends up on the Order Complete screen.
+persona: vegetarian
+pre_order_queries:
+  - "I'm vegetarian, what would you recommend?"
+termination_trigger: cvv
+cvv: "382"
+# expected_items: intentionally omitted — verification uses [AGENT RECOMMENDATION]
+# tag captured during the conversation to dynamically extract and verify what
+# the agent recommended vs what appears on the Order Complete screen.
+expected_delivery_type: Carryout
+tags:
+  - regression

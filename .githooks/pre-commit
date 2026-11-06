@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+"""
+Pre-commit hook
+  1. Always: run unit tests (fast, no device needed)
+  2. Only when a requirements file is staged: scan with pip-audit and
+     auto-fix any vulnerabilities that have a released patch.
+     Only the vulnerable package lines are updated in each file —
+     the rest of the file is left untouched (safe for cross-platform files).
+
+Requirements files covered: requirements.txt, requirements-windows.txt
+"""
+import json
+import re
+import subprocess
+import sys
+import os
+
+repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Use the venv Python when available so pytest and pip-audit are on the path.
+# git runs hooks with the system Python which may not have these packages.
+_venv_py = os.path.join(repo_root, ".venv", "bin", "python")
+python = _venv_py if os.path.exists(_venv_py) else python
+
+
+def run(cmd, **kwargs):
+    return subprocess.run(cmd, cwd=repo_root, **kwargs)
+
+
+# ── 1. Unit tests ──────────────────────────────────────────────────────────────
+result = run([python, "-m", "pytest", "unit_tests/", "-q"])
+if result.returncode != 0:
+    sys.exit(result.returncode)
+
+
+# ── 2. Dependency scan + auto-fix (only when a requirements file is staged) ───
+staged = run(
+    ["git", "diff", "--cached", "--name-only"],
+    capture_output=True, text=True,
+).stdout.splitlines()
+
+req_files = [f for f in ("requirements.txt", "requirements-windows.txt") if f in staged]
+if not req_files:
+    sys.exit(0)
+
+
+def _get_fixes(req_file: str) -> dict:
+    """
+    Run pip-audit in JSON mode and return {package_name_lower: fix_version}
+    for every vulnerability that has a released fix.
+    """
+    result = run(
+        [python, "-m", "pip_audit", "-r", req_file, "--format", "json"],
+        capture_output=True, text=True,
+    )
+    try:
+        data = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {}
+
+    fixes = {}
+    for dep in data.get("dependencies", []):
+        for vuln in dep.get("vulns", []):
+            fix_versions = vuln.get("fix_versions", [])
+            if fix_versions:
+                name = dep["name"].lower()
+                # Take the highest suggested fix version for this package
+                existing = fixes.get(name)
+                candidate = fix_versions[-1]  # pip-audit lists lowest-sufficient fix
+                if existing is None or candidate > existing:
+                    fixes[name] = candidate
+    return fixes
+
+
+def _apply_fixes_to_file(req_path: str, fixes: dict) -> list:
+    """
+    Rewrite req_path, bumping only the lines for packages in fixes.
+    Returns list of (package, old_version, new_version) for changed lines.
+    """
+    changes = []
+    new_lines = []
+    with open(req_path) as f:
+        for line in f:
+            m = re.match(r'^([A-Za-z0-9_.\-]+)==(\S+)', line)
+            if m:
+                pkg   = m.group(1).lower()
+                old_v = m.group(2)
+                if pkg in fixes and fixes[pkg] != old_v:
+                    new_line = re.sub(r'==\S+', f'=={fixes[pkg]}', line, count=1)
+                    new_lines.append(new_line)
+                    changes.append((m.group(1), old_v, fixes[pkg]))
+                    continue
+            new_lines.append(line)
+
+    with open(req_path, "w") as f:
+        f.writelines(new_lines)
+    return changes
+
+
+any_updated = False
+
+for req_file in req_files:
+    req_path = os.path.join(repo_root, req_file)
+    print(f"\n[pre-commit] {req_file} — scanning with pip-audit...")
+
+    fixes = _get_fixes(req_file)
+
+    if not fixes:
+        print(f"[pre-commit] {req_file}: no known vulnerabilities with available fixes.")
+        # Still run the standard scan to surface no-fix CVEs as warnings
+        run([python, "-m", "pip_audit", "-r", req_file])
+        continue
+
+    print(f"[pre-commit] Fixes available for: {', '.join(fixes.keys())} — updating {req_file}...")
+    changes = _apply_fixes_to_file(req_path, fixes)
+
+    for pkg, old_v, new_v in changes:
+        print(f"[pre-commit]   {pkg}: {old_v} → {new_v}")
+
+    # Install the updated packages so the venv matches
+    for pkg, _, new_v in changes:
+        run([python, "-m", "pip", "install", f"{pkg}=={new_v}", "--quiet"])
+
+    # Re-scan to surface any remaining no-fix CVEs
+    rescan = run([python, "-m", "pip_audit", "-r", req_file])
+    if rescan.returncode != 0:
+        print(
+            f"\n[pre-commit] Some vulnerabilities in {req_file} have no released patch yet.\n"
+            "  Add a Mend suppression for those CVEs.\n"
+            "  To bypass: git commit --no-verify"
+        )
+        sys.exit(1)
+
+    # Re-stage the patched file
+    run(["git", "add", req_file])
+    print(f"[pre-commit] {req_file} patched and re-staged.")
+    any_updated = True
+
+if any_updated:
+    print("\n[pre-commit] Requirements files were auto-patched with security fixes.")
+    print("             The commit will include the updated versions.")

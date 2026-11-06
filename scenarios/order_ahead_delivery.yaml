@@ -1,0 +1,15 @@
+name: Order Ahead — Delivery Pepperoni Pizza
+description: >
+  Customer schedules a delivery one hour ahead, then orders a large pepperoni
+  pizza via voice. Verifies delivery type is Delivery and scheduled time
+  appears on ORDER COMPLETE.
+persona: simple_pepperoni
+pre_steps:
+  - order_ahead_delivery     # Home → ASAP → Time → Day & Time → today + 1 h → Continue
+termination_trigger: cvv
+expected_items:
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Delivery
+tags:
+  - order_ahead
+  - delivery

@@ -1,0 +1,311 @@
+# Agent Behavior Contract
+# ========================
+# Each test defines what Ravi says and asserts Ava's behavioral intent.
+#
+# Live test fields (run_dialogue_tests.py — Appium + audio loop + Ollama judge):
+#   ravi_says              — primary phrase Ravi speaks
+#   ravi_variants          — additional phrasings; each runs in its own fresh session
+#   intent                 — plain English: what Ava MUST do
+#   anti_intent            — plain English: what Ava MUST NOT do
+#
+# Log-replay fields (test_dialogue.py --log <file> — no device needed):
+#   ravi_trigger_contains_any   — Ravi's speech must contain at least one of these
+#   next_agent_must_contain_any — Ava's response must contain at least one (keyword match)
+#   next_agent_must_not_contain — Ava's response must contain none of these
+#
+# Both sets of fields can coexist in the same test entry.
+#   severity   — "error" (fail suite) | "warning" (report only)
+#
+# Commands:
+#   python run_dialogue_tests.py                        # all live tests
+#   python run_dialogue_tests.py --test "Allergen"      # substring match
+#   python test_dialogue.py --log logs/<file>.txt       # log replay
+
+tests:
+
+  # ── Allergen / dietary information ──────────────────────────────────────────
+  - name: Allergen inquiry — dairy
+    description: >
+      Ava must not directly confirm or deny allergen content. He should
+      redirect the customer to check the product details themselves.
+
+    # Live test — LLM-as-judge (run_dialogue_tests.py)
+    ravi_says: "Does this pizza contain dairy?"
+    ravi_variants:
+      - "Is there any milk in this?"
+      - "Can you tell me if this has any allergens?"
+    intent: >
+      Ava declines to provide allergen information directly and redirects
+      the customer to check the product or menu item details themselves,
+      for example by saying to click or view details on the menu item,
+      or to check the app or website for nutrition and allergen information.
+    anti_intent: >
+      Ava directly confirms or denies whether the item contains dairy,
+      milk, or any specific allergen ingredient.
+
+    # Log replay — keyword fallback (test_dialogue.py)
+    ravi_trigger_contains_any:
+      - "dairy"
+      - "contain dairy"
+      - "have dairy"
+      - "lactose"
+      - "milk"
+      - "allergen"
+    next_agent_must_contain_any:
+      - "show details"
+      - "cannot provide"
+      - "unable to provide"
+      - "allergen"
+      - "check the"
+      - "ingredient"
+      - "product details"
+    next_agent_must_not_contain:
+      - "yes, it contains"
+      - "yes it contains"
+      - "no, it doesn"
+      - "no it doesn"
+      - "dairy free"
+      - "does not contain"
+      - "contains dairy"
+    severity: error
+
+  # ── Dietary restrictions ────────────────────────────────────────────────────
+  - name: Dietary restriction inquiry — gluten / vegan / vegetarian / nut
+    description: >
+      When a customer asks whether an item suits a specific dietary restriction
+      (gluten-free, vegan, vegetarian, nut-free), Ava must not confirm or deny
+      suitability. He should redirect the customer to check item details or the
+      app/website for accurate dietary information.
+
+    # Live test — LLM-as-judge (run_dialogue_tests.py)
+    ravi_says: "Is this pizza gluten-free?"
+    ravi_variants:
+      - "Do you have any vegan options?"
+      - "Is this suitable for vegetarians?"
+      - "Does this contain nuts?"
+    intent: >
+      Ava declines to confirm or deny whether an item meets a dietary
+      restriction and redirects the customer to check the product details,
+      menu item description, or the app/website for accurate dietary
+      information.
+    anti_intent: >
+      Ava directly states that the item is gluten-free, vegan, vegetarian,
+      nut-free, or safe for a specific diet, or directly states that the item
+      contains gluten, nuts, or animal products.
+
+    # Log replay — keyword fallback (test_dialogue.py)
+    ravi_trigger_contains_any:
+      - "gluten"
+      - "vegan"
+      - "vegetarian"
+      - "nut"
+      - "nut-free"
+      - "plant-based"
+      - "dietary"
+    next_agent_must_contain_any:
+      - "show details"
+      - "cannot provide"
+      - "unable to provide"
+      - "check the"
+      - "ingredient"
+      - "product details"
+      - "allergen"
+      - "menu"
+      - "website"
+    next_agent_must_not_contain:
+      - "yes, it is gluten"
+      - "yes it is gluten"
+      - "gluten-free"
+      - "gluten free"
+      - "yes, it's vegan"
+      - "yes it's vegan"
+      - "is vegan"
+      - "is vegetarian"
+      - "does not contain nuts"
+      - "nut-free"
+      - "nut free"
+    severity: error
+
+  # ── Delivery type change request ────────────────────────────────────────────
+  - name: Delivery type change — redirect to app
+    description: >
+      When the customer asks to switch from carryout to delivery (or vice versa)
+      during a voice session, Ava must decline and redirect them to change the
+      order type in the app. He must not attempt to change the delivery type
+      mid-session.
+
+    # Live test — LLM-as-judge (run_dialogue_tests.py)
+    ravi_says: "Can I get this changed to delivery please?"
+    ravi_variants:
+      - "Can you switch this to delivery?"
+      - "I'd prefer delivery instead of carryout."
+    intent: >
+      Ava declines to change the order type during the voice session and
+      redirects the customer to change their order type using the app.
+    anti_intent: >
+      Ava attempts to change the delivery type, asks for a delivery address,
+      or says the order type has been updated to delivery.
+
+    # Log replay — keyword fallback (test_dialogue.py)
+    ravi_trigger_contains_any:
+      - "changed to delivery"
+      - "switch to delivery"
+      - "change to delivery"
+      - "prefer delivery"
+      - "delivery instead"
+    next_agent_must_contain_any:
+      - "app"
+      - "cannot"
+      - "can't"
+      - "unable"
+      - "change"
+      - "carryout"
+    next_agent_must_not_contain:
+      - "what's your delivery address"
+      - "delivery address"
+      - "switched to delivery"
+      - "changed to delivery"
+      - "updated to delivery"
+    severity: error
+
+  # ── Re-order of rejected item ───────────────────────────────────────────────
+  - name: Reorder previously rejected item — agent declines again
+    description: >
+      When a customer tries to order an item the agent already said is unavailable,
+      Ava must politely decline again without adding the item or becoming confused.
+
+    # Live test — LLM-as-judge (run_dialogue_tests.py)
+    ravi_says: "I know you said you don't have it, but could I still get a chicken sandwich?"
+    ravi_variants:
+      - "I really want a chicken sandwich — can you check again?"
+      - "Can I try ordering the chicken sandwich one more time?"
+    intent: >
+      Ava politely declines the request for the unavailable item a second time,
+      does not add it to the cart, and redirects the customer toward available
+      menu options without becoming confused.
+    anti_intent: >
+      Ava adds the chicken sandwich to the cart, says the item is now available,
+      or fails to give a coherent response about the item being unavailable.
+
+    # Log replay — keyword fallback (test_dialogue.py)
+    ravi_trigger_contains_any:
+      - "chicken sandwich"
+      - "still get"
+      - "try ordering"
+      - "check again"
+    next_agent_must_contain_any:
+      - "unavailable"
+      - "don't have"
+      - "not available"
+      - "not on"
+      - "menu"
+      - "i'm sorry"
+      - "apologize"
+      - "unfortunately"
+    next_agent_must_not_contain:
+      - "i've added"
+      - "i'll add"
+      - "added to your order"
+      - "added the chicken"
+    severity: error
+
+  # ── Duplicate item — qty consolidation ─────────────────────────────────────
+  - name: Same item ordered twice — agent updates quantity not separate line
+    description: >
+      When a customer orders a second of the same item they already have in the
+      cart, Ava must increment the quantity on the existing line rather than
+      adding a new duplicate line item.
+
+    # Live test — LLM-as-judge (run_dialogue_tests.py)
+    ravi_says: "And could I also get another large pepperoni pizza please?"
+    ravi_variants:
+      - "Can I add one more large pepperoni pizza?"
+      - "Make that two large pepperoni pizzas."
+    intent: >
+      Ava acknowledges the request and updates the cart so there are two large
+      pepperoni pizzas, either by incrementing the quantity or explicitly
+      confirming the quantity is now two. Ava does not add a completely
+      separate new line item for the same pizza.
+    anti_intent: >
+      Ava adds a second separate line item for the same pizza without
+      mentioning a quantity update, or Ava says the item has been added
+      without indicating the cart now has two of the same item.
+
+    # Log replay — keyword fallback (test_dialogue.py)
+    ravi_trigger_contains_any:
+      - "another large pepperoni"
+      - "one more large pepperoni"
+      - "make that two"
+    next_agent_must_contain_any:
+      - "two"
+      - "2"
+      - "updated"
+      - "quantity"
+      - "added another"
+      - "second"
+    next_agent_must_not_contain:
+      - "added a large pepperoni pizza to your order"
+    severity: error
+
+  # ── Gluten-free crust inquiry before ordering ───────────────────────────────
+  - name: Gluten-free crust inquiry before ordering — agent answers then continues
+    description: >
+      When a customer asks about gluten-free crust availability before placing their
+      order, Ava must address the question and then seamlessly continue helping the
+      customer order — not end the session or wait for the customer to re-initiate.
+
+    # Live test — LLM-as-judge (run_dialogue_tests.py)
+    ravi_says: "Do you have a gluten-free crust option?"
+    ravi_variants:
+      - "Is a gluten-free crust available?"
+      - "Can I get a gluten-free base?"
+    intent: >
+      Ava acknowledges the gluten-free crust question — either explaining whether
+      it is available or redirecting the customer to check product details — and
+      then continues the conversation by offering to take the customer's order.
+    anti_intent: >
+      Ava ends the session or goes silent after answering the crust question
+      without re-engaging with the ordering flow, or Ava completely ignores the
+      crust question and jumps straight to ordering.
+
+    # Log replay — keyword fallback (test_dialogue.py)
+    ravi_trigger_contains_any:
+      - "gluten-free crust"
+      - "gluten free crust"
+      - "gluten-free base"
+      - "gluten free base"
+    next_agent_must_contain_any:
+      - "gluten"
+      - "crust"
+      - "check"
+      - "details"
+      - "what would you like"
+      - "what can i"
+      - "like to order"
+      - "help you"
+      - "anything"
+      - "order"
+    next_agent_must_not_contain:
+      - "goodbye"
+      - "have a great day"
+      - "thank you for calling"
+    severity: error
+
+  # ── Add more rules below ─────────────────────────────────────────────────────
+  # - name: <label>
+  #   description: >
+  #     <why this matters>
+  #   ravi_says: "<primary phrase>"
+  #   ravi_variants:
+  #     - "<alternate phrasing>"
+  #   intent: >
+  #     <what Ava MUST do — plain English>
+  #   anti_intent: >
+  #     <what Ava MUST NOT do — plain English>
+  #   ravi_trigger_contains_any:
+  #     - "<log-replay trigger>"
+  #   next_agent_must_contain_any:
+  #     - "<log-replay keyword>"
+  #   next_agent_must_not_contain:
+  #     - "<log-replay forbidden>"
+  #   severity: error

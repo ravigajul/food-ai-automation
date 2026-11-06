@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+.venv/
+ENV/
+
+# Testing artefacts
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+TEST*.xml
+
+# Generated test output — never commit
+logs/
+reports/
+
+# Audio / screenshots
+screenshots/
+temp_audio/
+*.mp3
+*.wav
+*.mp4
+*.tiff
+*.avi
+*.flv
+*.mov
+*.wmv
+
+# OS
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
+
+
+# Runtime logs
+*.log
+
+# Node artifact files
+node_modules/
+
+# Compiled Java class files
+*.class
+
+# Package files
+*.jar
+
+# Maven
+target/
+
+# Applications
+*.app
+*.exe
+*.war
+
+# Local assistant settings (may contain personal paths and permissions)
+.claude/settings.local.json
+*.local.json

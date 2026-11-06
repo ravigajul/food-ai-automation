@@ -1,0 +1,14 @@
+name: Indecisive Customer Order
+description: >
+  Hesitant customer who takes a moment to decide on details but eventually
+  settles on a large pepperoni pizza and breadsticks. Tests that the agent
+  handles pauses, hedging phrases, and delayed item additions gracefully.
+persona: indecisive
+termination_trigger: cvv   # agent asks for CVV → credit card payment flow
+cvv: "382"                 # digits Ravi speaks when agent requests CVV
+expected_items:
+  - "1 Large Pepperoni Pizza"
+  - "1 Order of Breadsticks"
+expected_delivery_type: Carryout
+tags:
+  - regression

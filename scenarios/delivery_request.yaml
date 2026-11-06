@@ -1,0 +1,19 @@
+name: Delivery Request During Carryout Voice Session
+description: >
+  Customer starts a carryout voice order, asks the agent to switch to delivery,
+  and the agent explains that delivery mode cannot be changed during the voice
+  session (must be done in the app). Ravi accepts the response and completes
+  the carryout order. Tests graceful agent handling of an unsupported mid-session
+  delivery request.
+persona: delivery_request
+pre_steps:
+  - order_ahead_carryout    # proven carryout setup: CARRYOUT tab → zip 40014 → store → future slot
+pre_order_queries:
+  - "Can I get this changed to delivery please?"
+termination_trigger: cvv
+cvv: "382"
+expected_items:
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression

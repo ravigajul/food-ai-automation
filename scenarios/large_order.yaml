@@ -1,0 +1,17 @@
+name: Large Party Order
+description: >
+  Customer places a large party order: two large pepperoni pizzas, two large
+  cheese pizzas, breadsticks, garlic knots, and a 2-liter Pepsi. Tests that
+  the agent handles a multi-item order placed sequentially without confusion.
+persona: large_order
+termination_trigger: cvv   # agent asks for CVV → credit card payment flow
+cvv: "382"                 # digits Ravi speaks when agent requests CVV
+expected_items:
+  - "2 Large Pepperoni Pizza"
+  - "2 Large Cheese Pizza"
+  - "1 Order of Breadsticks"
+  - "1 Order of Garlic Knots"
+  - "1 2-Liter Pepsi"
+expected_delivery_type: Carryout
+tags:
+  - regression

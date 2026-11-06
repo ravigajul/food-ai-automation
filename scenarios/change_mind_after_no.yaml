@@ -1,0 +1,19 @@
+name: Change Mind After Saying No — Add Garlic Knots at Order Review
+description: >
+  Customer orders a large pepperoni pizza, says "No, that's all" when asked
+  about extras, then changes their mind at the order review step and asks to
+  add garlic knots. Tests that Ava can accommodate a post-"no" change of mind
+  and the final order correctly reflects both items.
+persona: change_mind_after_no
+termination_trigger: cvv
+cvv: "382"
+voice_items:
+  - "1 Large Pepperoni Pizza"
+mind_change_item: "Actually, could I also add an order of garlic knots please?"
+expected_items:
+  - "1 Large Pepperoni Pizza"
+  - "1 Order of Garlic Knots"
+expected_delivery_type: Carryout
+tags:
+  - regression
+  - negative

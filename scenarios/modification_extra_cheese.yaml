@@ -1,0 +1,14 @@
+name: Extra Cheese Modification
+description: >
+  Customer orders a large pepperoni pizza then requests extra cheese as a
+  mid-order modification after the pizza is confirmed. Tests that the agent
+  correctly applies a single modification to an existing item.
+persona: extra_cheese
+termination_trigger: cvv   # agent asks for CVV → credit card payment flow
+cvv: "382"                 # digits Ravi speaks when agent requests CVV
+expected_items:
+  - "1 Large Pepperoni Pizza"
+  - "Extra Cheese"          # modifier — verified via Show Details text
+expected_delivery_type: Carryout
+tags:
+  - regression

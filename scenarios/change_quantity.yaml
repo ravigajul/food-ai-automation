@@ -1,0 +1,17 @@
+name: Change Item Quantity After Selection
+description: >
+  Customer orders one large pepperoni pizza then asks to increase the
+  quantity to two before checkout. Tests that the agent correctly updates
+  the quantity and the final order reflects two pizzas.
+persona: change_quantity
+termination_trigger: cvv
+cvv: "382"
+voice_items:                          # state machine orders this first
+  - "1 Large Pepperoni Pizza"
+post_order_requests:                  # served on the next "Anything else?" after all voice_items ordered
+  - "Actually, could you make that two large pepperoni pizzas please?"
+expected_items:                       # final verified state — two pizzas
+  - "2 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression

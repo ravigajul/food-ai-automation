@@ -1,0 +1,12 @@
+name: Simple Pepperoni Order
+description: >
+  Customer orders a single large pepperoni pizza with no modifications.
+  Straightforward order to verify the basic happy path.
+persona: simple_pepperoni
+termination_trigger: cvv   # agent asks for CVV → credit card payment flow
+cvv: "382"                 # digits Ravi speaks when agent requests CVV
+expected_items:
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - smoke

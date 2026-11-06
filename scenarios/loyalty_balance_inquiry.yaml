@@ -1,0 +1,15 @@
+name: Loyalty — Customer Asks Pipa Dough Balance Before Ordering
+description: >
+  Loyal customer asks for their Pipa Dough balance before placing an order.
+  Agent announces the balance, then customer orders and applies $1 Pipa Dough.
+persona: loyalty_balance_inquiry
+pre_order_queries:
+  - "What is my Pipa Dough balance?"
+pipa_dough_action: apply
+termination_trigger: cvv
+cvv: "382"
+expected_items:
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression

@@ -1,0 +1,13 @@
+name: Loyalty — Pipa Dough Covers Full Order Total
+description: >
+  Loyal customer applies Pipa Dough that covers the entire cart total.
+  No CVV is required — the order confirms directly after Pipa Dough is applied.
+persona: loyalty_full_coverage
+pipa_dough_action: apply
+termination_trigger: order_confirmed
+cvv: "382"
+expected_items:
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression

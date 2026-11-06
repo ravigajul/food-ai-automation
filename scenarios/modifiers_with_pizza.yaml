@@ -1,0 +1,18 @@
+name: Modifiers with Pizza
+description: >
+  Customer orders a large pepperoni pizza then requests multiple mid-order
+  customisations one at a time: extra sauce, well done bake, square cut,
+  and extra parmesan romano. Tests that the agent correctly applies all
+  modifications sequentially after the base item is confirmed.
+persona: modifiers_with_pizza
+termination_trigger: cvv   # agent asks for CVV → credit card payment flow
+cvv: "382"                 # digits Ravi speaks when agent requests CVV
+expected_items:
+  - "1 Large Pepperoni Pizza"
+  - "Extra Sauce"          # modifier — verified via "Sauce: Extra Original Pizza" in Show Details
+  - "Well Done Bake"       # modifier — verified via "Bake: Well Done" in Show Details
+  - "Square Cut"           # modifier — verified via "Cut: Square Cut" in Show Details
+  - "Extra Parmesan Romano" # modifier — verified via "Whole: ... Extra Parmesan Romano" in Show Details
+expected_delivery_type: Carryout
+tags:
+  - regression

@@ -1,0 +1,15 @@
+name: Order Ahead — Carryout Pepperoni Pizza
+description: >
+  Customer switches to carryout, enters zip 40014, selects the first store,
+  schedules a future pickup time, then orders a large pepperoni pizza via voice.
+  Verifies delivery type is Carryout and scheduled time appears on ORDER COMPLETE.
+persona: simple_pepperoni
+pre_steps:
+  - order_ahead_carryout     # CARRYOUT tab → zip 40014 → first store → future time slot
+termination_trigger: cvv
+expected_items:
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - order_ahead
+  - carryout

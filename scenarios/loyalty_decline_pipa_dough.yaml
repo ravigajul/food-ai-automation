@@ -1,0 +1,13 @@
+name: Loyalty — Customer Declines Pipa Dough
+description: >
+  Loyal customer with a Pipa Dough balance declines to apply it and proceeds
+  with a full credit card payment including CVV.
+persona: loyalty_decline_pipa_dough
+pipa_dough_action: decline
+termination_trigger: cvv
+cvv: "382"
+expected_items:
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression

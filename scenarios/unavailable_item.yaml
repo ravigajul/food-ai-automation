@@ -1,0 +1,18 @@
+name: Item Not on Menu
+description: >
+  Customer requests a chicken sandwich (not on the Acme Pizza menu).
+  Agent politely informs it is unavailable. Customer gracefully accepts
+  and places a fallback order for a large pepperoni pizza. Tests that
+  the agent handles an off-menu request without crashing or confusing
+  the customer, and that ordering continues normally afterwards.
+persona: unavailable_item
+termination_trigger: cvv
+cvv: "382"
+voice_items:                          # state machine orders the unavailable item first
+  - "1 Chicken Sandwich"
+expected_items:                       # fallback order Ravi places after rejection
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression
+  - negative

@@ -1,0 +1,13 @@
+name: Half and Half Pizza — Pepperoni Left, Canadian Bacon Right
+description: >
+  Customer orders large pepperoni pizza, left half pepperoni, right half canadian bacon.
+persona: half_and_half_pizza
+termination_trigger: cvv
+cvv: "382"
+expected_items:
+  - "1 Large Pepperoni Pizza"
+  - "Left half Pepperoni"
+  - "Right half Canadian Bacon"
+expected_delivery_type: Carryout
+tags:
+  - smoke

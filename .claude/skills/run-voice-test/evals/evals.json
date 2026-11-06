@@ -1,0 +1,65 @@
+{
+  "skill_name": "run-voice-test",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "run the smoke tests",
+      "expected_output": "Checks prerequisites (Appium, ADB, Ollama), lists microphones, selects default mic, executes: python run_suite.py --tag smoke --mic \"MacBook Pro Microphone\"",
+      "files": [],
+      "assertions": [
+        {
+          "id": "prereq_checks_present",
+          "description": "Response includes checks for Appium, ADB, and Ollama before running"
+        },
+        {
+          "id": "mic_listed_and_selected",
+          "description": "Response lists available microphones and selects one (default: MacBook Pro Microphone)"
+        },
+        {
+          "id": "correct_command",
+          "description": "Final command uses run_suite.py with --tag smoke and --mic flag"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "run the rushed persona test using the external USB microphone",
+      "expected_output": "Checks prerequisites, lists mics, selects USB mic, executes: python end_to_end_voice_test.py --full --persona rushed --mic \"<USB mic name>\"",
+      "files": [],
+      "assertions": [
+        {
+          "id": "uses_end_to_end_script",
+          "description": "Command uses end_to_end_voice_test.py --full, not run_suite.py"
+        },
+        {
+          "id": "persona_flag_correct",
+          "description": "Command includes --persona rushed"
+        },
+        {
+          "id": "usb_mic_selected",
+          "description": "Mic selection targets USB/external device, not MacBook Pro Microphone default"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "why did my test fail? the log says items mismatched",
+      "expected_output": "Explains that items mismatched on ORDER COMPLETE is expected/known behaviour — QA app always shows fixed demo data regardless of conversation. Not a framework bug. Points to expected_items in YAML as ground truth.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "explains_qa_demo_data",
+          "description": "Explains that QA app always shows fixed demo data on ORDER COMPLETE regardless of conversation"
+        },
+        {
+          "id": "not_a_bug_framing",
+          "description": "Correctly states this is expected/known behavior, not a framework bug"
+        },
+        {
+          "id": "points_to_expected_items",
+          "description": "Mentions expected_items in YAML as the ground truth for verification"
+        }
+      ]
+    }
+  ]
+}

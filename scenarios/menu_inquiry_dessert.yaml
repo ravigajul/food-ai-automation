@@ -1,0 +1,15 @@
+name: Menu Inquiry — Desserts Before Order
+description: >
+  Customer asks "What desserts do you have?" before placing an order,
+  then orders cinnamon pull-aparts based on the agent's response.
+  Tests that Ravi can ask an informational question before ordering.
+persona: menu_inquiry_dessert
+pre_order_queries:
+  - "What desserts do you have?"
+termination_trigger: cvv
+cvv: "382"
+expected_items:
+  - "1 Cinnamon Pull Aparts"
+expected_delivery_type: Carryout
+tags:
+  - regression

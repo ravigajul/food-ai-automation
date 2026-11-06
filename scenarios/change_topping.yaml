@@ -1,0 +1,17 @@
+name: Replace Topping After Selection
+description: >
+  Customer orders a large pepperoni pizza then asks to swap the topping
+  from pepperoni to sausage before checkout. Tests that the agent correctly
+  applies the topping substitution and the final order reflects sausage.
+persona: change_topping
+termination_trigger: cvv
+cvv: "382"
+voice_items:                          # state machine orders this first
+  - "1 Large Pepperoni Pizza"
+post_order_requests:                  # served on the next "Anything else?" after all voice_items ordered
+  - "Actually, could you change the pepperoni to sausage please?"
+expected_items:                       # final verified state — sausage, not pepperoni
+  - "1 Large Sausage Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression

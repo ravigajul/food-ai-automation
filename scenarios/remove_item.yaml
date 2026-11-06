@@ -1,0 +1,19 @@
+name: Remove Item After Confirmation
+description: >
+  Customer orders a large pepperoni pizza and garlic knots, then asks to
+  remove the garlic knots after they have been confirmed. Tests that the
+  agent correctly removes an item mid-order and the final order contains
+  only the pizza.
+persona: remove_item
+termination_trigger: cvv
+cvv: "382"
+voice_items:                          # items the state machine orders (includes the one to remove)
+  - "1 Large Pepperoni Pizza"
+  - "1 Order of Garlic Knots"
+items_to_remove:                      # requested after all voice_items are ordered
+  - "1 Order of Garlic Knots"
+expected_items:                       # final verified state — garlic knots gone
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression

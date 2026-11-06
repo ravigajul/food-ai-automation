@@ -1,0 +1,17 @@
+name: Change Item Size After Selection
+description: >
+  Customer orders a medium pepperoni pizza then asks to upgrade it to a
+  large before checkout. Tests that the agent correctly updates the item
+  size and the final order reflects the large pizza.
+persona: change_size
+termination_trigger: cvv
+cvv: "382"
+voice_items:                          # state machine orders this first
+  - "1 Medium Pepperoni Pizza"
+post_order_requests:                  # served on the next "Anything else?" after all voice_items ordered
+  - "Actually, could you change that to a large pepperoni pizza please?"
+expected_items:                       # final verified state — large, not medium
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression

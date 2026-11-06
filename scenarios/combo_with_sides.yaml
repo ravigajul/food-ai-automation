@@ -1,0 +1,15 @@
+name: Combo with Sides and Drink
+description: >
+  Customer orders a large pepperoni pizza, a side of breadsticks, and a
+  2-liter drink. Tests that multi-item orders are captured correctly.
+persona: combo
+termination_trigger: cvv   # agent asks for CVV → credit card payment flow
+cvv: "382"                 # digits Ravi speaks when agent requests CVV
+expected_items:
+  - "1 Large Pepperoni Pizza"
+  - "1 Order of Breadsticks"
+  - "1 2-Liter Pepsi"
+expected_delivery_type: Carryout
+tags:
+  - smoke
+  - regression

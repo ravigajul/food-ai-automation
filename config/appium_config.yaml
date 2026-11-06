@@ -1,0 +1,44 @@
+# Appium Configuration for Voice Ordering Test
+
+appium:
+  server_url: "http://localhost:4723"
+  
+capabilities:
+  platformName: "Android"
+  automationName: "UiAutomator2"
+  deviceName: "Android Device"  # Will use connected device
+  app: ""  # Leave empty to use installed app
+  appPackage: "com.acmepizza.android.debug.qa"
+  appActivity: "com.acmepizza.android.MainActivity"
+  noReset: true  # Keep app state (don't clear data between tests)
+  fullReset: false
+  autoGrantPermissions: true
+  newCommandTimeout: 300
+
+# Timeouts
+timeouts:
+  implicit_wait: 20
+  explicit_wait: 25
+  page_load: 20
+
+# Test configuration
+# Leave screenshot_dir and audio_dir empty to use the system temp directory
+# (tempfile.gettempdir()) — works on Mac, Windows, and Linux without changes.
+# Set explicit paths here only if you need a fixed location.
+test:
+  screenshot_dir: ""
+  audio_dir: ""
+  take_screenshots: true
+  record_audio: true
+
+# Voice AI configuration
+voice_ai:
+  tts_voice: "en-US-GuyNeural"  # Edge TTS voice — change here to affect all TTS calls
+  speech_recognition_timeout: 10
+  speech_phrase_time_limit: 8
+
+# Ollama configuration
+ollama:
+  base_url: "http://localhost:11434"
+  model: "qwen2.5:7b"  # Best available model for strict instruction following + short responses
+  timeout: 30

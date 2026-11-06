@@ -1,0 +1,17 @@
+name: Dietary Info Inquiry — Gluten-Free Crust Before Ordering
+description: >
+  Customer asks whether a gluten-free crust is available before committing to
+  their order. After the agent responds (redirecting to check details or
+  explaining availability), the customer places a regular large pepperoni pizza
+  order. Tests that a pre-order dietary inquiry is handled and the ordering
+  flow continues without confusion.
+persona: gluten_free_inquiry
+pre_order_queries:
+  - "Do you have a gluten-free crust option?"
+termination_trigger: cvv
+cvv: "382"
+expected_items:
+  - "1 Large Pepperoni Pizza"
+expected_delivery_type: Carryout
+tags:
+  - regression
